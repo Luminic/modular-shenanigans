@@ -24,17 +24,13 @@ def div(a,b,m):
 
 def minv(a,m):
     b=m
-    q=[]
-    # euclidian algorithm
+    c,d=0,1
     while a!=1:
-        q.append(b//a)
+        # extended euclidian algorithm
+        c,d=d,(c-mul(d,b//a,m))%m
+        # euclidian algorithm
         b,a=a,b%a
-    # extended euclidian algorithm
-    a,b=0,1
-
-    while len(q)!=0:
-        a,b=b,(a-mul(b,q.pop(-1),m))%m
-    return b
+    return d
 
 
 
@@ -80,8 +76,6 @@ def verify(A,a,b,m):
     ax,ay=A
     return math.isinf(ay) or mul(ay,ay,m)==(mul(mul(ax,ax,m),ax,m)+mul(a,ax,m)+b)%m
 
-import cv2
-import numpy as np
 import random
 
 def find_secret_key(G,Key1,Key2,a,b,m):
@@ -91,9 +85,9 @@ def find_secret_key(G,Key1,Key2,a,b,m):
         A=add(A,G,a,b,m)
         c+=1
     if Key1==A:
-        print(scalar(Key2,c,a,b,m))
+        return scalar(Key2,c,a,b,m)
     else:
-        print(scalar(Key1,c,a,b,m))
+        return scalar(Key1,c,a,b,m)
 
 def find_valid(a,b,m):
     if m%4==3:
@@ -109,7 +103,9 @@ def main():
     a,b=124819,1234512
     p=10000019
     G=find_valid(a,b,p)
-    print(verify(G,a,b,p))
+    print("Generator")
+    print(G)
+    print("Transmitted data")
     secret_key=random.randint(0,p)
     my_key=random.randint(0,p)
     what_you_send_me=scalar(G,secret_key,a,b,p)
@@ -121,6 +117,7 @@ def main():
     print("Secret from onlookers")
     print(your_shared_key)
     print(my_shared_key)
-    find_secret_key(G,what_i_send_you,what_you_send_me,a,b,p)
+    print("Brute force attack")
+    print(find_secret_key(G,what_i_send_you,what_you_send_me,a,b,p))
 
 main()
